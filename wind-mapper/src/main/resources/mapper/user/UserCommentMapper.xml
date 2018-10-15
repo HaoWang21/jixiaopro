@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--suppress ALL -->
+<mapper namespace="com.jixiao.user.mapper.IUserCommentMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_dynamic_id, user_id, content, reply_user_comment_id, reply_user_id, parent_id, gmt_create, gmt_modified, del_flag
+    </sql>
+
+    <select id="selectVoListByUserDynamicId" resultType="com.jixiao.user.entity.vo.UserCommentVO">
+      SELECT
+        uc.id, ui.avatar_url, ui.nick_name, uc.content, uc.gmt_create
+      FROM
+	    user_comment AS uc
+	  LEFT JOIN
+	    user_info AS ui ON ui.user_id = uc.user_id
+      WHERE
+	    uc.user_dynamic_id = #{userDynamicId} AND uc.del_flag = 0 AND uc.parent_id IS NULL
+	  ORDER BY
+	    uc.gmt_create DESC
+    </select>
+
+    <select id="selectVoListByUserCommentId" resultType="com.jixiao.user.entity.vo.UserCommentVO">
+      SELECT
+        uc.id, ui.avatar_url, ui.nick_name, uc.content, replyUi.nick_name AS replyNickName
+      FROM
+	    user_comment AS uc
+	  LEFT JOIN
+	    user_info AS ui ON ui.user_id = uc.user_id
+	  LEFT JOIN
+	    user_info AS replyUi ON replyUi.user_id = uc.reply_user_id
+      WHERE
+	    uc.parent_id = #{userCommentId} AND uc.del_flag = 0
+	  ORDER BY
+	    uc.gmt_create ASC
+    </select>
+
+</mapper>

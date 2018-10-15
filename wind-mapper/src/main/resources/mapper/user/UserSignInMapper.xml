@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--suppress ALL -->
+<mapper namespace="com.jixiao.user.mapper.IUserSignInMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, `year`, `month`, `day`, continuity, copper_coin, gmt_create, gmt_modified, del_flag
+    </sql>
+
+    <select id="selectOneByUserIdAndDate" resultType="com.jixiao.user.entity.UserSignIn">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+          user_sign_in
+        WHERE
+          user_id = #{userId} AND `year` = #{year} AND `month` = #{month} AND `day` = #{day} AND del_flag = 0
+    </select>
+
+    <select id="selectVoListByUserId" resultType="com.jixiao.user.entity.vo.UserSignInListVO">
+        SELECT
+          continuity, copper_coin, DATE_FORMAT(gmt_create, '%Y-%m-%d') AS gmtCreate
+        FROM
+          user_sign_in
+        WHERE
+          user_id = #{userId} AND del_flag = 0
+        ORDER BY
+          gmt_create DESC
+    </select>
+
+</mapper>

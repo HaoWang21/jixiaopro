@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--suppress ALL -->
+<mapper namespace="com.jixiao.user.mapper.IUserFollowMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, follow_user_id, gmt_create, gmt_modified, del_flag
+    </sql>
+
+    <select id="selectListByUserIdAndIds" resultType="com.jixiao.user.entity.UserFollow">
+      SELECT
+        <include refid="Base_Column_List"/>
+      FROM
+        user_follow
+      WHERE
+        user_id = #{userId} AND follow_user_id IN
+        <foreach item="tag" index="index" collection="ids" open="(" separator="," close=")">
+            #{tag}
+        </foreach>
+    </select>
+
+    <select id="selectListByUserId" resultType="com.jixiao.user.entity.vo.UserFollowVO">
+      SELECT
+        ui.user_id, ui.avatar_url, ui.nick_name
+      FROM
+        user_follow AS uf
+      LEFT JOIN
+        user_info AS ui ON ui.user_id = uf.follow_user_id
+      WHERE
+        uf.user_id = #{userId}
+      ORDER BY
+        uf.gmt_create DESC
+      LIMIT
+        6
+    </select>
+
+</mapper>

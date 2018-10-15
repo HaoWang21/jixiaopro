@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--suppress ALL -->
+<mapper namespace="com.jixiao.user.mapper.IUserUploadMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_dynamic_id, user_id, url, content_type, `size`, status, gmt_create, gmt_modified, del_flag
+    </sql>
+
+    <select id="selectListByUserIdAndIds" resultType="com.jixiao.user.entity.UserUpload">
+      SELECT
+        <include refid="Base_Column_List"/>
+      FROM
+        user_upload
+      WHERE
+        user_id = #{userId} AND del_flag = 0 AND user_dynamic_id IS NULL
+        AND id IN
+          <foreach collection="ids" index="index" item="tag" open="(" separator="," close=")">
+            ${tag}
+          </foreach>
+    </select>
+
+    <select id="selectStringListByUserDynamicId" resultType="java.lang.String">
+      SELECT
+        url
+      FROM
+        user_upload
+      WHERE
+        user_dynamic_id = #{userDynamicId} AND status = 0 AND del_flag = 0
+    </select>
+
+</mapper>

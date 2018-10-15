@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--suppress ALL -->
+<mapper namespace="com.jixiao.user.mapper.IUserAddressMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, nick_name, mobile, province_tool_district_id, city_tool_district_id, area_tool_district_id, address,
+        default_address, gmt_create, gmt_modified, del_flag
+    </sql>
+
+    <select id="selectVoListByUserId" resultType="com.jixiao.user.entity.vo.UserAddressVO">
+      SELECT
+        ua.id, ua.nick_name, ua.mobile, province.name AS provinceName, city.name AS cityName, area.name AS areaName,
+        ua.address, ua.default_address
+      FROM
+        user_address AS ua
+      LEFT JOIN
+        tool_district AS province ON province.id = ua.province_tool_district_id
+      LEFT JOIN
+        tool_district AS city ON city.id = ua.city_tool_district_id
+      LEFT JOIN
+        tool_district AS area ON area.id = ua.area_tool_district_id
+      WHERE
+        ua.user_id = #{userId} AND ua.del_flag = 0
+      ORDER BY
+        ua.default_address DESC, ua.gmt_create ASC
+    </select>
+
+    <select id="selectVOByIdAndUserId" resultType="com.jixiao.user.entity.vo.UserAddressVO">
+      SELECT
+        ua.id, ua.nick_name, ua.mobile, province.name AS provinceName, city.name AS cityName, area.name AS areaName,
+        ua.address, ua.default_address
+      FROM
+        user_address AS ua
+      LEFT JOIN
+        tool_district AS province ON province.id = ua.province_tool_district_id
+      LEFT JOIN
+        tool_district AS city ON city.id = ua.city_tool_district_id
+      LEFT JOIN
+        tool_district AS area ON area.id = ua.area_tool_district_id
+      WHERE
+        ua.id = #{id} AND ua.user_id = #{userId} AND ua.del_flag = 0
+    </select>
+
+</mapper>

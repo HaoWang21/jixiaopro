@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--suppress ALL -->
+<mapper namespace="com.jixiao.user.mapper.IUserInfoMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, nick_name, avatar_url, gender, backdrop_url, avatar_case_url,
+        province_tool_district_id, city_tool_district_id, area_tool_district_id, address, role,
+        referee_code, referee_url, referee_user_id, gmt_create, gmt_modified, del_flag
+    </sql>
+
+</mapper>

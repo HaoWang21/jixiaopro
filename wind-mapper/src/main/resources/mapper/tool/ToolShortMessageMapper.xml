@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--suppress ALL -->
+<mapper namespace="com.jixiao.tool.mapper.IToolShortMessageMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, mobile, code, `type`, send_ip, error_message, status, gmt_create, gmt_modified, del_flag
+    </sql>
+
+    <select id="selectByMobileAndOtherAttribute" resultType="com.jixiao.tool.entity.ToolShortMessage">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+          tool_short_message
+        WHERE
+          mobile = #{mobile} AND code = #{code} AND `type` = #{type} AND status = #{status} AND del_flag = 0
+    </select>
+
+</mapper>

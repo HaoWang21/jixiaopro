@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--suppress ALL -->
+<mapper namespace="com.jixiao.tool.mapper.IToolDictMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, label, `value`, icon, seq, parent_id, editable, enable, remark, create_sys_user_id, gmt_create, gmt_modified, del_flag
+    </sql>
+
+    <select id="selectListByParentValue" resultType="com.jixiao.tool.entity.vo.ToolDictVO">
+        SELECT
+          d.id, d.label, d.`value`, d.icon
+        FROM
+          tool_dict AS d
+        LEFT JOIN
+          tool_dict AS td ON td.id = d.parent_id
+        WHERE
+          d.enable = 1 AND d.del_flag = 0 AND td.`value` = #{value}
+        ORDER BY
+          d.seq ASC
+    </select>
+
+    <select id="selectByValueAndParentValue" resultType="com.jixiao.tool.entity.ToolDict">
+        SELECT
+          d.*
+        FROM
+          tool_dict AS d
+        LEFT JOIN
+          tool_dict AS td ON td.id = d.parent_id
+        WHERE
+          d.enable = 1 AND d.del_flag = 0 AND d.`value` = #{value} AND td.`value` = #{parentValue}
+    </select>
+
+</mapper>

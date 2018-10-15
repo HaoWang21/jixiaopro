@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--suppress ALL -->
+<mapper namespace="com.jixiao.user.mapper.IUserWalletStreamMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, before_balance, balance, before_consume_coupon, consume_coupon, before_gold_coin, gold_coin,
+        before_silver_coin, silver_coin, before_copper_coin, copper_coin, remark,
+        check_balance, check_consume_coupon, check_gold_coin, check_silver_coin, check_copper_coin, gmt_create, gmt_modified, del_flag
+    </sql>
+
+</mapper>

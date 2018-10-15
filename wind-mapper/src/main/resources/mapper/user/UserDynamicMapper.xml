@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--suppress ALL -->
+<mapper namespace="com.jixiao.user.mapper.IUserDynamicMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, content, type_tool_dict_id, `type`, status, title, original_user_dynamic_id,
+        transmit_count, comment_count, praise_count, collect_count, gmt_create, gmt_modified, del_flag
+    </sql>
+
+    <select id="selectVoListIsHotByUserId" resultType="com.jixiao.user.entity.vo.UserDynamicHotVO">
+      SELECT
+        ud.id, ud.user_id, ud.content, ud.type, ui.nick_name, ui.avatar_url, uu.url, IF(uc.id IS NULL, 0, 1) AS praise
+      FROM
+        user_dynamic AS ud
+      LEFT JOIN
+        user_dynamic_settings AS uds ON uds.user_dynamic_id = ud.id AND uds.browse = 'ALL'
+      LEFT JOIN
+        user_info AS ui ON ui.user_id = ud.user_id
+      LEFT JOIN
+        user_upload AS uu ON uu.user_dynamic_id = ud.id
+      LEFT JOIN
+        user_custom AS uc ON uc.user_dynamic_id = ud.id AND uc.type = 0 AND uc.user_id = #{userId}
+      WHERE
+        ud.`status` = 0 AND ud.del_flag = 0
+      <if test="typeId != null">
+        AND ud.type_tool_dict_id = #{typeId}
+      </if>
+      ORDER BY
+        ud.praise_count DESC, ud.gmt_create ASC
+    </select>
+
+    <select id="selectVoDetailsById" resultType="com.jixiao.user.entity.vo.UserDynamicDetailsVO">
+      SELECT
+        ud.id, ud.user_id, ud.content, ud.type, ud.transmit_count, ud.comment_count, ud.praise_count, ud.collect_count,
+        uds.address, ui.nick_name, ui.avatar_url,
+        IF(uf.id IS NULL, 0, 1) AS follow, IF(uc1.id IS NULL, 0, 1) AS praise, IF(uc2.id IS NULL, 0, 1) AS collect
+      FROM
+        user_dynamic AS ud
+      LEFT JOIN
+        user_dynamic_settings AS uds ON uds.user_dynamic_id = ud.id
+      LEFT JOIN
+        user_info AS ui ON ui.id = ud.user_id
+      LEFT JOIN
+        user_follow AS uf ON uf.follow_user_id = ud.user_id AND uf.user_id = #{userId}
+      LEFT JOIN
+        user_custom AS uc1 ON uc1.user_dynamic_id = ud.id AND uc1.type = 0 AND uc1.user_id = #{userId}
+      LEFT JOIN
+        user_custom AS uc2 ON uc2.user_dynamic_id = ud.id AND uc2.type = 1 AND uc2.user_id = #{userId}
+      WHERE
+        ud.id = #{id} AND ud.`status` = 0 AND ud.del_flag = 0
+      GROUP BY
+        ud.id
+    </select>
+
+    <update id="updateByIdAndTypeChangeCount">
+      UPDATE user_dynamic
+        <choose>
+          <when test="type == 0">
+            SET praise_count = (praise_count + #{count})
+          </when>
+          <when test="type == 1">
+            SET collect_count = (collect_count + #{count})
+          </when>
+          <when test="type == 2">
+            SET comment_count = (comment_count + #{count})
+          </when>
+          <otherwise>
+            SET transmit_count = (transmit_count + #{count})
+          </otherwise>
+        </choose>
+      WHERE
+        id = #{id} AND del_flag = 0
+    </update>
+
+    <select id="selectVoListIsFollowByUserId" resultType="com.jixiao.user.entity.vo.UserDynamicFollowVO">
+      SELECT
+        t1.*, ui.nick_name, ui.avatar_url, IF(uc1.id IS NULL, 0, 1) AS praise, IF(uc2.id IS NULL, 0, 1) AS collect
+      FROM (
+        SELECT
+          ud.id, ud.user_id, ud.content, ud.type, ud.transmit_count, ud.comment_count, ud.praise_count, ud.collect_count, ud.gmt_create
+        FROM
+          user_dynamic AS ud
+        LEFT JOIN
+          user_follow AS uf ON uf.follow_user_id = ud.user_id
+        WHERE
+          ud.`status` = 0 AND ud.del_flag = 0 AND uf.user_id = #{userId}
+        ) AS t1
+      LEFT JOIN
+        user_dynamic_settings AS uds ON uds.user_dynamic_id = t1.id
+      LEFT JOIN
+        user_info AS ui ON ui.id = t1.user_id
+      LEFT JOIN
+        user_follow AS uf ON uf.follow_user_id = t1.user_id AND uf.user_id = #{userId}
+        <if test="followUserId != null">
+          AND uf.follow_user_id = #{followUserId}
+        </if>
+      LEFT JOIN
+        user_custom AS uc1 ON uc1.user_dynamic_id = t1.id AND uc1.type = 0 AND uc1.user_id = #{userId}
+      LEFT JOIN
+        user_custom AS uc2 ON uc2.user_dynamic_id = t1.id AND uc2.type = 1 AND uc2.user_id = #{userId}
+      ORDER BY
+        t1.gmt_create DESC
+    </select>
+
+    <select id="selectVoListIsNearbyByUserId" resultType="com.jixiao.user.entity.vo.UserDynamicHotVO">
+      CALL geo_user_dynamic(#{lng}, #{lat}, #{current}, #{size}, #{distance}, #{userId})
+    </select>
+
+</mapper>

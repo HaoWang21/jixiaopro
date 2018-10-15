@@ -1,0 +1,49 @@
+spring:
+  profiles:
+    active: @profileActive@
+  aop:
+    auto: true
+    proxy-target-class: true
+  mvc:
+    throw-exception-if-no-handler-found: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+      enabled: true
+  session:
+    timeout: 604800s
+    store-type: redis
+    redis:
+      flush-mode: on_save
+      namespace: spring:session
+  jackson:
+    time-zone: GMT+8
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*/*Mapper.xml
+  typeAliasesPackage: com.jixiao.*.entity
+  global-config:
+    banner: false
+    db-config:
+      id-type: auto
+      field-strategy: not_empty
+      tableUnderline: true
+      db-type: mysql
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+
+logging:
+  config: classpath:xml/logback-spring.xml
+
+#diy
+org:
+  defined:
+    appId: wx92907770b435788f
+    secret: d621c746841541e3825f9f03c04ab71d
+    messageAccessKeyId: LTAIjrEiASuooIdc
+    messageAccessKeySecret: l7SqugYN0N8CwuTO1fGk8jzWhsyjR7
+    ossAccessKeyId: LTAIGqqOgQhfJw4w
+    ossAccessKeySecret: zJizIM33V05Ugm42cjBxkoQ1PJZ0tr
+    endpoint: http://oss-cn-hangzhou.aliyuncs.com

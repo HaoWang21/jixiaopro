@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--suppress ALL -->
+<mapper namespace="com.jixiao.operate.mapper.IOperateBannerMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, banner_url, url, begin_time, end_time, seq, enable, remark, activity_id, create_sys_user_id, gmt_create, gmt_modified, del_flag
+    </sql>
+
+    <select id="selectVoListByValid" resultType="com.jixiao.operate.entity.vo.OperateBannerVO">
+        SELECT
+          ob.id, ob.banner_url, ob.url, IF(ob.activity_id IS NULL, 0, 1) AS activity, oa.url AS activityUrl
+        FROM
+          operate_banner AS ob
+        LEFT JOIN
+          operate_activity AS oa ON oa.id = ob.activity_id AND oa.enable = 1 AND oa.status = 1 AND oa.del_flag = 0
+        WHERE
+          ob.enable = 1 AND ob.del_flag = 0 AND ob.begin_time <![CDATA[ <= ]]> #{date} AND ob.end_time <![CDATA[ >= ]]> #{date}
+        ORDER BY
+          ob.seq DESC
+    </select>
+
+</mapper>
