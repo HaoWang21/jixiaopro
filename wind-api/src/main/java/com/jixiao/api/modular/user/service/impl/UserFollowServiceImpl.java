@@ -26,7 +26,7 @@ public class UserFollowServiceImpl implements IUserFollowService {
 
     @Lock4j(keys = {"#userId"}, expire = 30000, tryTimeout = 1000)
     @Override
-    public JsonResult saveOrRemove(Long followUserId, Long userId) {
+    public JsonResult saveOrRemove(Long followUserId, Integer check, Long userId) {
         UserInfo userInfo = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>().eq(UserInfo::getUserId, followUserId));
         if (null == userInfo) {
             return JsonResult.failure(ErrorCode.BAD_REQUEST);
@@ -37,11 +37,18 @@ public class UserFollowServiceImpl implements IUserFollowService {
                 .eq(UserFollow::getFollowUserId, followUserId)
                 .eq(UserFollow::getDelFlag, 0));
 
-        if (null == userFollow) {
+        if (check == 1) {
+            if (null != userFollow) {
+                return JsonResult.failure(ErrorCode.BAD_REQUEST);
+            }
             userFollowMapper.insert(new UserFollow.Builder().userId(userId).followUserId(followUserId).build());
         } else {
+            if (null == userFollow) {
+                return JsonResult.failure(ErrorCode.BAD_REQUEST);
+            }
             userFollowMapper.deleteById(userFollow.getId());
         }
+
         return JsonResult.success();
     }
 }

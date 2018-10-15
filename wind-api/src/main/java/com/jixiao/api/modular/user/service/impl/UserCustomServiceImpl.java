@@ -29,7 +29,7 @@ public class UserCustomServiceImpl implements IUserCustomService {
     @Lock4j(keys = {"#userId"}, expire = 30000, tryTimeout = 1000)
     @Transactional(rollbackFor = DiyException.class)
     @Override
-    public JsonResult saveOrRemove(Long userDynamicId, Integer type, Long userId) {
+    public JsonResult saveOrRemove(Long userDynamicId, Integer type, Integer check, Long userId) {
         UserDynamic userDynamic = userDynamicMapper.selectById(userDynamicId);
         if (null == userDynamic) {
             return JsonResult.failure(ErrorCode.BAD_REQUEST);
@@ -39,7 +39,12 @@ public class UserCustomServiceImpl implements IUserCustomService {
                 .eq(UserCustom::getUserDynamicId, userDynamicId).eq(UserCustom::getUserId, userId)
                 .eq(UserCustom::getType, type).eq(UserCustom::getDelFlag, 0));
 
-        if (null == userCustom) {
+
+        if (check == 1) {
+            if (null != userCustom) {
+                return JsonResult.failure(ErrorCode.BAD_REQUEST);
+            }
+
             switch (type) {
                 case 0:
                     userDynamicMapper.updateByIdAndTypeChangeCount(userDynamicId, 0, 1);
@@ -52,6 +57,10 @@ public class UserCustomServiceImpl implements IUserCustomService {
             }
             userCustomMapper.insert(new UserCustom.Builder().userDynamicId(userDynamicId).userId(userId).type(type).build());
         } else {
+            if (null == userCustom) {
+                return JsonResult.failure(ErrorCode.BAD_REQUEST);
+            }
+
             switch (type) {
                 case 0:
                     userDynamicMapper.updateByIdAndTypeChangeCount(userDynamicId, 0, -1);
@@ -64,6 +73,7 @@ public class UserCustomServiceImpl implements IUserCustomService {
             }
             userCustomMapper.deleteById(userCustom.getId());
         }
+
         return JsonResult.success();
     }
 }

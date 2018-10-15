@@ -13,8 +13,9 @@ public interface IUserFollowService {
      *
      * @param followUserId 关注的用户Id
      * @param userId 用户Id
+     * @param check 确认取消：0否 1是
      * @return json
      */
-    JsonResult saveOrRemove(Long followUserId, Long userId);
+    JsonResult saveOrRemove(Long followUserId, Integer check, Long userId);
 
 }

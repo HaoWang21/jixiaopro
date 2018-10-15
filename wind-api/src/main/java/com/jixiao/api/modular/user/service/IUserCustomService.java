@@ -13,9 +13,10 @@ public interface IUserCustomService {
      *
      * @param userDynamicId 动态Id
      * @param type 类型：0点赞 1收藏
+     * @param check 确认取消：0否 1是
      * @param userId 用户Id
      * @return json
      */
-    JsonResult saveOrRemove(Long userDynamicId, Integer type, Long userId);
+    JsonResult saveOrRemove(Long userDynamicId, Integer type, Integer check, Long userId);
 
 }

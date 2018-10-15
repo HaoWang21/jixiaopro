@@ -27,13 +27,14 @@ public class UserCustomController extends BaseController {
     @Autowired
     private IUserCustomService userCustomService;
 
-    @ApiOperation(value = "点赞/收藏(user)", notes = "请求第一点赞请求第二次取消点赞")
+    @ApiOperation(value = "点赞/收藏(user)", notes = "点赞关注")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userDynamicId", value = "动态Id", required = true, dataType = "long", paramType = "query"),
-            @ApiImplicitParam(name = "type", value = "类型：0点赞 1收藏", required = true, dataType = "int", paramType = "query")
+            @ApiImplicitParam(name = "type", value = "类型：0点赞 1收藏", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "check", value = "确认取消：0否 1是", required = true, dataType = "int", paramType = "query")
     })
     @PostMapping
-    public JsonResult saveOrRemove(Long userDynamicId, Integer type) {
+    public JsonResult saveOrRemove(Long userDynamicId, Integer type, Integer check) {
         switch (type) {
             case 0:
             case 1:
@@ -41,7 +42,14 @@ public class UserCustomController extends BaseController {
             default:
                 return JsonResult.failure(ErrorCode.BAD_REQUEST);
         }
-        return userCustomService.saveOrRemove(userDynamicId, type, getUserId());
+        switch (check) {
+            case 0:
+            case 1:
+                break;
+            default:
+                return JsonResult.failure(ErrorCode.BAD_REQUEST);
+        }
+        return userCustomService.saveOrRemove(userDynamicId, type, check, getUserId());
     }
 
 }
